@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')), # متصل کردن آدرس‌های یوزرز
     path('', AuthPageView.as_view(), name='auth_page'), # آدرس اصلی سایت
+    path('api/', include('courses.urls')),
 ]
+

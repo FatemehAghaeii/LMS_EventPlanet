@@ -41,7 +41,7 @@
     </div>
 
     <script>
-        let currentMode = 'signup'; // حالت پیش‌فرض روی ورود (Sign Up) است
+        let currentMode = 'signup'; 
 
         function switchMode(mode) {
             currentMode = mode;
@@ -51,19 +51,17 @@
             const submitBtn = document.getElementById('submitBtn');
             const messageEl = document.getElementById('message');
             
-            messageEl.innerText = ""; // پاک کردن پیام‌های قبلی
+            messageEl.innerText = ""; 
 
             if (mode === 'signup') {
-                // حالت ورود
                 tabSignUp.className = "text-lg font-bold text-blue-600 border-b-2 border-blue-600 pb-1 focus:outline-none";
                 tabSignIn.className = "text-lg font-bold text-gray-400 pb-1 focus:outline-none";
-                roleField.classList.add('hidden'); // فیلد نقش مخفی می‌شود
+                roleField.classList.add('hidden'); 
                 submitBtn.innerText = "ورود (Sign Up)";
             } else {
-                // حالت ثبت‌نام
                 tabSignIn.className = "text-lg font-bold text-blue-600 border-b-2 border-blue-600 pb-1 focus:outline-none";
                 tabSignUp.className = "text-lg font-bold text-gray-400 pb-1 focus:outline-none";
-                roleField.classList.remove('hidden'); // فیلد نقش ظاهر می‌شود
+                roleField.classList.remove('hidden'); 
                 submitBtn.innerText = "ثبت‌نام (Sign In)";
             }
         }
@@ -75,7 +73,6 @@
             const role = document.getElementById('role').value;
             const messageEl = document.getElementById('message');
 
-            // تشخیص آدرس API بر اساس حالتی که کاربر انتخاب کرده
             const apiUrl = currentMode === 'signup' ? '/api/auth/sign-up/' : '/api/auth/sign-in/';
 
             const bodyData = { username, password };
@@ -95,10 +92,15 @@
                     messageEl.className = "mt-4 text-center text-sm font-semibold text-green-600";
                     if (currentMode === 'signin') {
                         messageEl.innerText = "ثبت‌نام با موفقیت انجام شد! حالا می‌توانید وارد شوید.";
-                        setTimeout(() => switchMode('signup'), 1500); // انتقال خودکار به فرم ورود
+                        setTimeout(() => switchMode('signup'), 1500); 
                     } else {
-                        messageEl.innerText = "ورود موفقیت‌آمیز بود! نقش شما: " + data.role;
-                        localStorage.setItem('token', data.token); // ذخیره توکن در مرورگر
+                        messageEl.innerText = "ورود موفقیت‌آمیز بود! در حال انتقال به داشبورد...";
+                        localStorage.setItem('token', data.token); 
+                        
+                        // انتقال مستقیم و خودکار بدون نیاز به تغییر آدرس دستی
+                        setTimeout(() => {
+                            window.location.href = '/api/dashboard/';
+                        }, 1000);
                     }
                 } else {
                     messageEl.className = "mt-4 text-center text-sm font-semibold text-red-600";
