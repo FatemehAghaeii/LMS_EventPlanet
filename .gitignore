@@ -1,0 +1,19 @@
+# Python compile files
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Django Static & Media (for production)
+staticfiles/
+media/
+
+# Environment Variables
+.env
