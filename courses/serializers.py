@@ -13,7 +13,6 @@ class FeedbackSerializer(serializers.ModelSerializer):
         model = Feedback
         fields = ['id', 'student_name', 'rating', 'comment', 'created_at']
 
-# 🌟 استخراج کاملاً واقعی نام دانشجویان ثبت‌نام شده
 class EnrolledStudentSerializer(serializers.ModelSerializer):
     student_name = serializers.ReadOnlyField(source='student.username')
 
@@ -21,11 +20,10 @@ class EnrolledStudentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = ['student_name']
 
-# فقط بخش کلاس CourseSerializer را در فایل پیدا کن و با این فیلدها آپدیت کن:
 class CourseSerializer(serializers.ModelSerializer):
     instructor_name = serializers.ReadOnlyField(source='instructor.username')
     level_display = serializers.CharField(source='get_level_display', read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True) # 🌟 اضافه شد
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     image = serializers.ImageField(required=False, allow_null=True)
     
     steps = CourseStepSerializer(many=True, read_only=True)
@@ -37,16 +35,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'price', 'capacity', 
             'image', 'duration_hours', 'prerequisites', 'level', 'level_display',
-            'status', 'status_display', # 🌟 این دو فیلد اضافه شدند
-            'instructor', 'instructor_name', 'steps', 'feedbacks', 'enrolled_students', 'created_at'
-        ]
-        read_only_fields = ['instructor', 'created_at']
-
-    class Meta:
-        model = Course
-        fields = [
-            'id', 'title', 'description', 'price', 'capacity', 
-            'image', 'duration_hours', 'prerequisites', 'level', 'level_display',
+            'status', 'status_display',
             'instructor', 'instructor_name', 'steps', 'feedbacks', 'enrolled_students', 'created_at'
         ]
         read_only_fields = ['instructor', 'created_at']
