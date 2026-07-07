@@ -2,155 +2,546 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مدیریت دوره‌ها | LMS EventPlanet</title>
+    <title>داشبورد آموزشی | LMS EventPlanet</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-5xl mx-auto">
         <div class="flex justify-between items-center bg-white p-6 rounded-lg shadow-md mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">داشبورد دوره‌های آموزشی</h1>
-                <p class="text-sm text-gray-500 mt-1">خوش آمدید! وضعیت سیستم: <span id="userRole" class="font-bold text-blue-600">کد کاربری فعال</span></p>
+                <h1 class="text-2xl font-bold text-gray-800">سامانه مدیریت یادگیری (LMS)</h1>
+                <p class="text-sm text-gray-500 mt-1">خوش آمدید! وضعیت سیستم: <span id="userRole" class="font-bold text-blue-600">در حال بررسی...</span></p>
             </div>
-            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition text-sm">خروج</button>
+            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition text-sm font-bold">خروج</button>
         </div>
 
-        <div id="createCourseSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">➕ ایجاد دوره جدید (مخصوص اساتید)</h2>
-            <form id="courseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="mainDashboardView">
+            <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex gap-4 items-center">
+                <input type="text" id="searchBar" placeholder="🔍 جستجوی عنوان دوره، پیش‌نیازها یا مباحث..." class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="loadCourses()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-bold text-sm">جستجو</button>
+            </div>
+
+            <div id="createCourseSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">➕ ایجاد رویداد/دوره جدید (پنل مدرسین)</h2>
+                <form id="courseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">عنوان دوره</label>
+                        <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">تصویر دوره</label>
+                        <input type="file" id="image" accept="image/*" class="mt-1 w-full p-1.5 border rounded-md focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">طول دوره (ساعت)</label>
+                        <input type="number" id="duration_hours" required min="1" class="mt-1 w-full p-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">سطح دوره</label>
+                        <select id="level" class="mt-1 w-full p-2 border rounded-md">
+                            <option value="BEGINNER">مقدماتی</option>
+                            <option value="INTERMEDIATE">متوسط</option>
+                            <option value="ADVANCED">پیشرفته</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ظرفیت (نفر)</label>
+                        <input type="number" id="capacity" required class="mt-1 w-full p-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">قیمت (تومان)</label>
+                        <input type="number" id="price" required class="mt-1 w-full p-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">پیش‌نیازهای دوره</label>
+                        <input type="text" id="prerequisites" placeholder="مثلا: آشنایی مقدماتی با پایتون" class="mt-1 w-full p-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">توضیحات دوره</label>
+                        <textarea id="description" rows="3" required class="mt-1 w-full p-2 border rounded-md"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition font-bold">ثبت و انتشار دوره با وضعیت پیش‌نویس</button>
+                    </div>
+                </form>
+                <p id="formMessage" class="mt-3 text-center text-sm font-semibold"></p>
+            </div>
+
+            <div id="myCoursesSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+                <h2 class="text-xl font-bold text-indigo-700 mb-4 border-b pb-2">🎓 دوره‌های من (ثبت‌نام شده)</h2>
+                <div id="myCoursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">📚 دوره‌های آموزشی موجود</h2>
+                <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+
+        <div id="singleCourseView" class="hidden space-y-6">
+            <button onclick="backToDashboard()" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-300 transition text-sm font-bold flex items-center gap-2 cursor-pointer">
+                ⬅️ بازگشت به داشبورد اصلی دوره‌ها
+            </button>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-3">
+                <img id="detailCourseImage" src="" alt="" class="w-full h-full object-cover min-h-48">
+                <div class="p-6 md:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h2 id="detailCourseTitle" class="text-2xl font-bold text-gray-800"></h2>
+                            <div class="flex gap-2">
+                                <span id="detailCourseStatus" class="text-xs px-3 py-1 rounded-full font-bold"></span>
+                                <span id="detailCourseLevel" class="text-xs px-3 py-1 rounded-full font-bold bg-blue-100 text-blue-800"></span>
+                            </div>
+                        </div>
+                        <p id="detailCourseDesc" class="text-gray-600 mt-3 text-sm leading-relaxed"></p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-700">
+                        <div>⏱️ <b>طول دوره:</b> <span id="detailCourseDuration"></span> ساعت</div>
+                        <div>🔑 <b>پیش‌نیازها:</b> <span id="detailCoursePrereq"></span></div>
+                        <div>👨‍🏫 <b>مدرس دوره:</b> <span id="detailCourseInstructor"></span></div>
+                        <div>👥 <b>ظرفیت باقی‌مانده:</b> <span id="detailCourseCapacity"></span> نفر</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="instructorStatusManagementArea" class="bg-white p-6 rounded-lg shadow-md hidden border-r-4 border-amber-500">
+                <h3 class="text-md font-bold text-gray-800 mb-2">⚙️ مدیریت چرخه وضعیت رویداد</h3>
+                <p class="text-xs text-gray-500 mb-4">به عنوان برگزارکننده، وضعیت این رویداد را بر اساس پیشرفت کلاس تغییر دهید (تغییرات باید به ترتیب منطقی باشند):</p>
+                <div class="flex flex-wrap gap-2" id="statusButtonsContainer"></div>
+                <p id="statusActionMessage" class="mt-3 text-xs font-semibold text-center"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-bold text-indigo-900 border-b pb-2 mb-4">📋 مراحل و سرفصل‌های کلاس</h3>
+                        <div id="detailStepsList" class="space-y-2"></div>
+                        
+                        <div id="instructorStepFormArea" class="mt-6 pt-6 border-t border-gray-100 hidden">
+                            <h4 class="text-sm font-bold text-gray-700 mb-2">➕ ثبت سرفصل یا جلسه جدید</h4>
+                            <form id="stepForm" class="flex gap-2">
+                                <input type="text" id="stepTitle" required placeholder="مثلا: جلسه اول: پیکربندی دیتابیس" class="flex-1 p-2 border rounded-md text-sm">
+                                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition font-bold text-xs">ثبت سرفصل</button>
+                            </form>
+                            <p id="stepMessage" class="mt-2 text-xs text-center font-semibold"></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-bold text-amber-900 border-b pb-2 mb-4">💬 بازخورد و تالار گفتگوی دانشجویان</h3>
+                        <div id="detailFeedbacksList" class="space-y-3"></div>
+                        
+                        <div id="studentFeedbackFormArea" class="mt-4 hidden">
+                            <p id="feedbackRestrictionMessage" class="text-xs text-center text-amber-700 font-semibold bg-amber-50 p-2 rounded border border-amber-200 hidden">ثبت بازخورد تنها پس از اتمام رویداد (وضعیت Finished) امکان‌پذیر است.</p>
+                            <button id="openFeedbackBtn" onclick="openFeedbackModal()" class="w-full bg-amber-500 text-white py-2 rounded-md hover:bg-amber-600 transition font-bold text-sm hidden">💬 ثبت نظر و امتیاز جدید به این کلاس</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="instructorStudentsSidebar" class="bg-white p-6 rounded-lg shadow-md hidden">
+                    <h3 class="text-lg font-bold text-emerald-900 border-b pb-2 mb-4">👥 لیست دانشجویان حاضر</h3>
+                    <div id="detailStudentsList" class="space-y-2 text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96 border-t-4 border-emerald-500">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">💳 درگاه پرداخت الکترونیک</h3>
+            <p id="modalCourseTitle" class="text-sm text-gray-600 mb-4 font-semibold"></p>
+            <form id="paymentForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">عنوان دوره</label>
-                    <input type="text" id="title" required class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">شماره کارت (۱۶ رقمی)</label>
+                    <input type="text" id="cardNumber" placeholder="6037 ---- ---- ----" required maxlength="19" class="w-full p-2 border rounded-md text-center tracking-widest">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">ظرفیت (نفر)</label>
-                    <input type="number" id="capacity" required class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">رمز دوم</label>
+                        <input type="password" required class="w-full p-2 border rounded-md text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">CVV2</label>
+                        <input type="number" required class="w-full p-2 border rounded-md text-center">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">قیمت (تومان)</label>
-                    <input type="number" id="price" required class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">توضیحات دوره</label>
-                    <textarea id="description" rows="3" required class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition font-medium">ثبت و انتشار دوره</button>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-emerald-600 text-white p-2 rounded-md hover:bg-emerald-700 transition font-bold text-sm">تایید و پرداخت آنلاین</button>
+                    <button type="button" onclick="closePaymentModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm">انصراف</button>
                 </div>
             </form>
-            <p id="formMessage" class="mt-3 text-center text-sm font-semibold"></p>
         </div>
+    </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">📚 لیست دوره‌های فعال</h2>
-            <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div id="feedbackModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96 border-t-4 border-indigo-500">
+            <h3 class="text-lg font-bold text-gray-800 mb-1">💬 ثبت بازخورد و امتیاز دوره</h3>
+            <p id="feedbackCourseTitle" class="text-xs text-gray-500 mb-4"></p>
+            <form id="feedbackForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">امتیاز شما به دوره:</label>
+                    <select id="feedbackRating" class="w-full p-2 border rounded-md">
+                        <option value="5">⭐⭐⭐⭐⭐ (عالی)</option>
+                        <option value="4">⭐⭐⭐⭐ (خیلی خوب)</option>
+                        <option value="3">⭐⭐⭐ (متوسط)</option>
+                        <option value="2">⭐⭐ (ضعیف)</option>
+                        <option value="1">⭐ (خیلی ضعیف)</option>
+                    </select>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">متن بازخورد و نظر شما:</label>
+                    <textarea id="feedbackComment" rows="3" required placeholder="نظر خود را بنویسید..." class="w-full p-2 border rounded-md"></textarea>
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition font-bold text-xs">ثبت و ارسال بازخورد</button>
+                    <button type="button" onclick="closeFeedbackModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-xs">انصراف</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-        }
+        if (!token) window.location.href = '/';
 
-        document.addEventListener("DOMContentLoaded", () => {
-            loadUserProfileAndCourses();
-        });
+        let currentCoursesData = [];
+        let selectedCourseId = null;
+        let userRole = 'PARTICIPANT';
+        let registeredCourseIds = [];
 
-        async function loadUserProfileAndCourses() {
+        document.addEventListener("DOMContentLoaded", () => { initializeDashboard(); });
+
+        async function initializeDashboard() {
             try {
-                await loadCourses();
-                // فرم رو جهت تست باز نگه می‌داریم، بک‌اند امنیتش رو بررسی می‌کنه
-                document.getElementById('createCourseSection').classList.remove('hidden');
-            } catch (error) {
-                console.error(error);
-            }
+                const profileResponse = await fetch('/api/auth/profile/', { headers: { 'Authorization': `Token ${token}` } });
+                if (profileResponse.status === 401) { logout(); return; }
+                const profileData = await profileResponse.json();
+                userRole = profileData.role;
+
+                if (userRole === 'ORGANIZER') {
+                    document.getElementById('userRole').innerText = `پورتال رسمی مدرس (جناب آقای دکتر طاهری)`;
+                    document.getElementById('createCourseSection').classList.remove('hidden');
+                    document.getElementById('myCoursesSection').classList.add('hidden');
+                } else {
+                    document.getElementById('userRole').innerText = `پورتال فعال دانشجو (سرکار خانم صفایی)`;
+                    document.getElementById('createCourseSection').classList.add('hidden');
+                    document.getElementById('myCoursesSection').classList.remove('hidden');
+                    await loadMyCourses();
+                }
+                loadCourses();
+            } catch (e) { console.error(e); }
         }
 
         async function loadCourses() {
+            const searchQuery = document.getElementById('searchBar').value;
             try {
-                const response = await fetch('/api/courses/', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Token ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.status === 401) {
-                    logout();
-                    return;
-                }
-
-                const courses = await response.json();
+                const response = await fetch(`/api/courses/?search=${searchQuery}`, { headers: { 'Authorization': `Token ${token}` } });
+                currentCoursesData = await response.json();
                 const container = document.getElementById('coursesList');
                 container.innerHTML = '';
 
-                if (courses.length === 0) {
-                    container.innerHTML = '<p class="text-gray-500 col-span-2 text-center py-4">هیچ دوره‌ای تا کنون ثبت نشده است.</p>';
+                if (currentCoursesData.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 col-span-2 text-center py-4">هیچ دوره‌ای پیدا نشد.</p>';
+                    return;
                 }
 
-                courses.forEach(course => {
+                currentCoursesData.forEach(course => {
+                    const finalImage = course.image ? course.image : 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=400';
+                    let actionButton = `<button onclick="openCourseClass(${course.id})" class="bg-blue-600 text-white px-4 py-1.5 rounded-md text-xs hover:bg-blue-700 transition font-bold cursor-pointer">🚪 ورود به کلاس</button>`;
+                    
+                    if (userRole === 'PARTICIPANT' && !registeredCourseIds.includes(course.id)) {
+                        if (course.status === 'PUBLISHED') {
+                            actionButton = `<button onclick="openPaymentModal(${course.id}, '${course.title}')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-md text-xs hover:bg-indigo-700 transition font-bold cursor-pointer">💳 پرداخت و ثبت‌نام</button>`;
+                        } else {
+                            actionButton = `<span class="text-xs bg-gray-200 text-gray-500 px-3 py-1.5 rounded-md font-bold">${course.status_display}</span>`;
+                        }
+                    }
+
                     container.innerHTML += `
-                        <div class="border p-4 rounded-lg bg-gray-50 hover:shadow-sm transition">
-                            <h3 class="text-lg font-bold text-gray-800">${course.title}</h3>
-                            <p class="text-sm text-gray-600 mt-1 h-12 overflow-hidden">${course.description}</p>
-                            <div class="mt-4 flex justify-between items-center text-xs text-gray-500 border-t pt-2">
-                                <span>👨‍🏫 مدرس: ${course.instructor_name}</span>
-                                <span>👥 ظرفیت: ${course.capacity} نفر</span>
-                            </div>
-                            <div class="mt-2 text-left">
-                                <span class="text-sm font-bold text-green-600">${parseFloat(course.price) === 0 ? 'رایگان' : parseFloat(course.price).toLocaleString() + ' تومان'}</span>
+                        <div class="border rounded-lg bg-white overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                            <img src="${finalImage}" alt="${course.title}" class="w-full h-44 object-cover">
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="text-lg font-bold text-gray-800">${course.title}</h3>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800">${course.level_display}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 line-clamp-2 mb-3">${course.description}</p>
+                                </div>
+                                <div class="border-t pt-2 mt-2 flex justify-between items-center">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-green-600">${parseFloat(course.price) === 0 ? 'رایگان' : parseFloat(course.price).toLocaleString() + ' تومان'}</span>
+                                        <span class="text-[10px] text-gray-400 mt-0.5">وضعیت: ${course.status_display}</span>
+                                    </div>
+                                    ${actionButton}
+                                </div>
                             </div>
                         </div>
                     `;
                 });
+            } catch (e) { console.error(e); }
+        }
 
-            } catch (error) {
-                console.error(error);
+        function openCourseClass(courseId) {
+            selectedCourseId = courseId;
+            const course = currentCoursesData.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('mainDashboardView').classList.add('hidden');
+            document.getElementById('singleCourseView').classList.remove('hidden');
+
+            document.getElementById('detailCourseTitle').innerText = course.title;
+            document.getElementById('detailCourseDesc').innerText = course.description;
+            document.getElementById('detailCourseLevel').innerText = course.level_display;
+            document.getElementById('detailCourseDuration').innerText = course.duration_hours;
+            document.getElementById('detailCoursePrereq').innerText = course.prerequisites;
+            document.getElementById('detailCourseInstructor').innerText = course.instructor_name;
+            document.getElementById('detailCourseCapacity').innerText = course.capacity;
+            document.getElementById('detailCourseImage').src = course.image ? course.image : 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=400';
+
+            const statusBadge = document.getElementById('detailCourseStatus');
+            statusBadge.innerText = course.status_display;
+            if (course.status === 'DRAFT') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-gray-100 text-gray-800"; }
+            else if (course.status === 'PUBLISHED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-green-100 text-green-800"; }
+            else if (course.status === 'CLOSED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-amber-100 text-amber-800"; }
+            else if (course.status === 'FINISHED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-red-100 text-red-800"; }
+
+            const stepsContainer = document.getElementById('detailStepsList');
+            stepsContainer.innerHTML = '';
+            if (course.steps && course.steps.length > 0) {
+                course.steps.forEach((step, idx) => {
+                    stepsContainer.innerHTML += `
+                        <div class="bg-indigo-50/50 border border-indigo-100 p-3 rounded-md flex justify-between items-center">
+                            <span class="text-sm font-semibold text-indigo-950">📚 جلسه ${idx+1}: ${step.title}</span>
+                            <span class="text-[10px] bg-indigo-200 text-indigo-800 font-bold px-2 py-0.5 rounded">فایل تدریس فعال</span>
+                        </div>
+                    `;
+                });
+            } else { stepsContainer.innerHTML = '<p class="text-gray-400 italic text-sm">هنوز سرفصلی آپلود نشده است.</p>'; }
+
+            const feedbackContainer = document.getElementById('detailFeedbacksList');
+            feedbackContainer.innerHTML = '';
+            if (course.feedbacks && course.feedbacks.length > 0) {
+                course.feedbacks.forEach(f => {
+                    let stars = '⭐'.repeat(f.rating);
+                    feedbackContainer.innerHTML += `
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <div class="flex justify-between font-bold text-gray-700 text-xs mb-1">
+                                <span>👤 دانشجو: ${f.student_name}</span>
+                                <span>${stars}</span>
+                            </div>
+                            <p class="text-gray-600 text-xs font-medium">${f.comment}</p>
+                        </div>
+                    `;
+                });
+            } else { feedbackContainer.innerHTML = '<p class="text-gray-400 italic text-sm">هنوز هیچ نظری ثبت نشده است.</p>'; }
+
+            if (userRole === 'ORGANIZER') {
+                document.getElementById('instructorStepFormArea').classList.remove('hidden');
+                document.getElementById('studentFeedbackFormArea').classList.add('hidden');
+                document.getElementById('instructorStudentsSidebar').classList.remove('hidden');
+                document.getElementById('instructorStatusManagementArea').classList.remove('hidden');
+                
+                renderStatusButtons(course.status);
+
+                const studentsListContainer = document.getElementById('detailStudentsList');
+                studentsListContainer.innerHTML = '';
+                if (course.enrolled_students && course.enrolled_students.length > 0) {
+                    course.enrolled_students.forEach(st => {
+                        studentsListContainer.innerHTML += `
+                            <div class="p-2 bg-emerald-50 text-emerald-900 font-semibold rounded border border-emerald-100 mb-1 flex items-center gap-1">
+                                👩‍🎓 ${st.student_name}
+                            </div>
+                        `;
+                    });
+                } else { studentsListContainer.innerHTML = '<p class="text-gray-400 italic text-xs">هنوز دانشجویی ثبت‌نام نکرده است.</p>'; }
+            } else {
+                document.getElementById('instructorStepFormArea').classList.add('hidden');
+                document.getElementById('instructorStudentsSidebar').classList.add('hidden');
+                document.getElementById('instructorStatusManagementArea').classList.add('hidden');
+                
+                if (registeredCourseIds.includes(courseId)) {
+                    document.getElementById('studentFeedbackFormArea').classList.remove('hidden');
+                    if (course.status === 'FINISHED') {
+                        document.getElementById('openFeedbackBtn').classList.remove('hidden');
+                        document.getElementById('feedbackRestrictionMessage').classList.add('hidden');
+                    } else {
+                        document.getElementById('openFeedbackBtn').classList.add('hidden');
+                        document.getElementById('feedbackRestrictionMessage').classList.remove('hidden');
+                    }
+                } else { document.getElementById('studentFeedbackFormArea').classList.add('hidden'); }
             }
         }
+
+        function renderStatusButtons(currentStatus) {
+            const container = document.getElementById('statusButtonsContainer');
+            container.innerHTML = '';
+            document.getElementById('statusActionMessage').innerText = '';
+
+            const statuses = [
+                { id: 'PUBLISHED', label: '🚀 انتشار رویداد (Published)' },
+                { id: 'CLOSED', label: '🔒 بستن ثبت‌نام (Closed)' },
+                { id: 'FINISHED', label: '🏁 اتمام رویداد (Finished)' }
+            ];
+
+            statuses.forEach(st => {
+                let btnClass = "px-4 py-2 rounded text-xs font-bold transition cursor-pointer ";
+                let isDisabled = false;
+
+                if (currentStatus === 'DRAFT' && st.id === 'PUBLISHED') btnClass += "bg-green-600 text-white hover:bg-green-700";
+                else if (currentStatus === 'PUBLISHED' && st.id === 'CLOSED') btnClass += "bg-amber-600 text-white hover:bg-amber-700";
+                else if (currentStatus === 'CLOSED' && st.id === 'FINISHED') btnClass += "bg-red-600 text-white hover:bg-red-700";
+                else {
+                    btnClass += "bg-gray-200 text-gray-400 cursor-not-allowed";
+                    isDisabled = true;
+                }
+
+                container.innerHTML += `<button onclick="updateCourseStatus('${st.id}')" ${isDisabled ? 'disabled' : ''} class="${btnClass}">${st.label}</button>`;
+            });
+        }
+
+        async function updateCourseStatus(newStatus) {
+            const msg = document.getElementById('statusActionMessage');
+            try {
+                const response = await fetch(`/api/courses/${selectedCourseId}/update-status/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    msg.className = "mt-3 text-xs font-semibold text-center text-green-600";
+                    msg.innerText = data.detail;
+                    
+                    const res = await fetch(`/api/courses/`, { headers: { 'Authorization': `Token ${token}` } });
+                    currentCoursesData = await res.json();
+                    openCourseClass(selectedCourseId);
+                } else {
+                    msg.className = "mt-3 text-xs font-semibold text-center text-red-600";
+                    msg.innerText = data.detail;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function backToDashboard() {
+            document.getElementById('mainDashboardView').classList.remove('hidden');
+            document.getElementById('singleCourseView').classList.add('hidden');
+            loadCourses();
+        }
+
+        document.getElementById('stepForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('stepTitle').value;
+            const msg = document.getElementById('stepMessage');
+            try {
+                const response = await fetch(`/api/courses/${selectedCourseId}/steps/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, order: 1 })
+                });
+                if (response.ok) {
+                    msg.className = "mt-2 text-xs text-center font-semibold text-green-600";
+                    msg.innerText = "سرفصل با موفقیت اضافه شد! 🎉";
+                    document.getElementById('stepTitle').value = '';
+                    const res = await fetch(`/api/courses/`, { headers: { 'Authorization': `Token ${token}` } });
+                    currentCoursesData = await res.json();
+                    openCourseClass(selectedCourseId);
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rating = document.getElementById('feedbackRating').value;
+            const comment = document.getElementById('feedbackComment').value;
+            try {
+                const response = await fetch(`/api/courses/${selectedCourseId}/feedback/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rating, comment })
+                });
+                if (response.ok) {
+                    alert("✨ بازخورد شما با موفقیت ثبت شد.");
+                    closeFeedbackModal();
+                    const res = await fetch(`/api/courses/`, { headers: { 'Authorization': `Token ${token}` } });
+                    currentCoursesData = await res.json();
+                    openCourseClass(selectedCourseId);
+                } else { alert("شما قبلاً نظر خود را ثبت کرده‌اید!"); closeFeedbackModal(); }
+            } catch (e) { console.error(e); }
+        });
+
+        async function loadMyCourses() {
+            try {
+                const response = await fetch('/api/courses/enroll/', { headers: { 'Authorization': `Token ${token}` } });
+                const myCourses = await response.json();
+                registeredCourseIds = myCourses.map(c => c.id);
+                const container = document.getElementById('myCoursesList');
+                container.innerHTML = '';
+
+                if (myCourses.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 col-span-2 text-center py-2">شما هنوز در هیچ کلاسی ثبت‌نام نکرده‌اید.</p>';
+                    return;
+                }
+                myCourses.forEach(course => {
+                    container.innerHTML += `
+                        <div class="border border-green-200 p-4 rounded-lg bg-green-50 shadow-sm flex justify-between items-center">
+                            <div>
+                                <h3 class="text-md font-bold text-green-900">${course.title}</h3>
+                                <p class="text-xs text-green-700 mt-1">👨‍🏫 مدرس: ${course.instructor_name} | وضعیت: ${course.status_display}</p>
+                            </div>
+                            <button onclick="openCourseClass(${course.id})" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs hover:bg-emerald-700 transition font-bold cursor-pointer">🚪 ورود به محیط کلاس</button>
+                        </div>
+                    `;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function openPaymentModal(courseId, courseTitle) { selectedCourseId = courseId; document.getElementById('modalCourseTitle').innerText = `دوره: ${courseTitle}`; document.getElementById('paymentModal').classList.remove('hidden'); }
+        function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); document.getElementById('paymentForm').reset(); }
+        function openFeedbackModal() { document.getElementById('feedbackModal').classList.remove('hidden'); }
+        function closeFeedbackModal() { document.getElementById('feedbackModal').classList.add('hidden'); document.getElementById('feedbackForm').reset(); }
+
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch(`/api/courses/enroll/${selectedCourseId}/`, { method: 'POST', headers: { 'Authorization': `Token ${token}` } });
+                if (response.ok) {
+                    alert(`✨ پرداخت موفقیت‌آمیز بود!`);
+                    closePaymentModal();
+                    await loadMyCourses();
+                    loadCourses();   
+                }
+            } catch (e) { console.error(e); }
+        });
 
         document.getElementById('courseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const title = document.getElementById('title').value;
-            const capacity = document.getElementById('capacity').value;
-            const price = document.getElementById('price').value;
-            const description = document.getElementById('description').value;
             const messageEl = document.getElementById('formMessage');
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('duration_hours', document.getElementById('duration_hours').value);
+            formData.append('level', document.getElementById('level').value);
+            formData.append('capacity', document.getElementById('capacity').value);
+            formData.append('price', document.getElementById('price').value);
+            formData.append('prerequisites', document.getElementById('prerequisites').value);
+            formData.append('description', document.getElementById('description').value);
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) formData.append('image', imageFile);
 
             try {
-                const response = await fetch('/api/courses/', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ title, capacity, price, description })
-                });
-
-                const data = await response.json();
-
+                const response = await fetch('/api/courses/', { method: 'POST', headers: { 'Authorization': `Token ${token}` }, body: formData });
                 if (response.ok) {
                     messageEl.className = "mt-3 text-center text-sm font-semibold text-green-600";
-                    messageEl.innerText = "دوره با موفقیت ساخته و منتشر شد! 🎉";
+                    messageEl.innerText = "دوره با موفقیت به صورت پیش‌نویس (Draft) ساخته شد. برای فعال‌سازی وارد محیط کلاس شوید و دکمه انتشار را بزنید.";
                     document.getElementById('courseForm').reset();
-                    loadCourses(); 
-                } else {
-                    messageEl.className = "mt-3 text-center text-sm font-semibold text-red-600";
-                    messageEl.innerText = data.detail ? data.detail : "خطا: فقط اساتید مجاز به ساخت دوره هستند یا داده‌ها نامعتبرند.";
+                    loadCourses();
                 }
-            } catch (error) {
-                messageEl.innerText = "خطا در اتصال به سرور!";
-            }
+            } catch (e) { console.error(e); }
         });
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = '/';
-        }
+        function logout() { localStorage.clear(); window.location.href = '/'; }
     </script>
 </body>
 </html>

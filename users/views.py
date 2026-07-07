@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from .serializers import RegisterSerializer
+from rest_framework.permissions import IsAuthenticated
 
 # ۱. ویو ثبت‌نام (Sign In)
 class RegisterView(APIView):
@@ -34,4 +35,15 @@ class LoginView(ObtainAuthToken):
 # ۳. ویو رندر کردن صفحه فرانت
 class AuthPageView(APIView):
     def get(self, request):
-        return render(request, 'users/auth.html')  # حالا با فاصله درست و ایمپورت شده
+        return render(request, 'users/auth.html')  # حالا با فاصله درست و ایمپورت 
+    
+
+# ویو جدید برای ارسال مشخصات کاربر فعلی به فرانت‌اِند
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({
+            "username": request.user.username,
+            "role": request.user.role
+        })
