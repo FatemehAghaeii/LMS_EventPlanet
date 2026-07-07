@@ -45,6 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # فریم‌ورک‌های اضافه شده
+    'rest_framework',
+    
+    # اپلیکیشن‌های پروژه ما
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -55,20 +61,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # ... اپلیکیشن‌های پیش‌فرض جنگو ...
-    'django.contrib.staticfiles',
-    
-    # فریم‌ورک‌های اضافه شده
-    'rest_framework',
-    
-    # اپلیکیشن‌های پروژه ما
-    'users',
-
-
-    
-    # اپلیکیشن‌های پروژه ما (تغییر به آدرس مستقیم کلاس کانفیگ)
-    'users.apps.UsersConfig',
 ]
 
 ROOT_URLCONF = 'config.urls'
