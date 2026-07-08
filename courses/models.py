@@ -75,9 +75,16 @@ class CourseStep(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='steps', verbose_name="دوره")
     title = models.CharField(max_length=255, verbose_name="عنوان مرحله/سرفصل")
     order = models.PositiveIntegerField(default=1, verbose_name="ترتیب نمایش")
+    
+    # 🌟 فیلدهای جدید چندمرحله‌ای برای زمان و سخنران مستقل هر جلسه طبق بند داک استاد
+    scheduled_time = models.CharField(max_length=100, default="تعیین نشده", verbose_name="زمان برگزاری جلسه")
+    speaker = models.CharField(max_length=255, default="مدرس دوره", verbose_name="سخنران / مربی / داور")
 
     class Meta:
         ordering = ['order']
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
 
 
 class Feedback(models.Model):

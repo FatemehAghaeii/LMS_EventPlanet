@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # سرویس دیتابیس PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: lms_postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=lms_eventplanet
+      - POSTGRES_USER=lms_user
+      - POSTGRES_PASSWORD=lms_password
+    ports:
+      - "5432:5432"
+    restart: always
+
+  # سرویس وب اپلیکیشن جنگو ما
+  web:
+    build: .
+    container_name: lms_django_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SECRET_KEY=django-insecure-fatsnia-safaei-key-2026-lms-platform
+      - DJANGO_DEBUG=True
+      - DB_NAME=lms_eventplanet
+      - DB_USER=lms_user
+      - DB_PASSWORD=lms_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  postgres_data:

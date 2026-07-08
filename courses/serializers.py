@@ -4,7 +4,8 @@ from .models import Course, CourseStep, Feedback, Enrollment, Attribute, CourseA
 class CourseStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStep
-        fields = ['id', 'title', 'order']
+        # 🌟 فیلدهای زمان و سخنران به سریالایزر مراحل اضافه شدند
+        fields = ['id', 'title', 'order', 'scheduled_time', 'speaker']
 
 class FeedbackSerializer(serializers.ModelSerializer):
     student_name = serializers.ReadOnlyField(source='student.username')
