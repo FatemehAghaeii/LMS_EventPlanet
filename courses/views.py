@@ -16,7 +16,7 @@ class CourseListCreateView(APIView):
         if request.user.role == 'PARTICIPANT':
             base_courses = Course.objects.exclude(status='DRAFT')
         else:
-            base_courses = Course.objects.all()
+            base_courses = Course.objects.filter(instructor=request.user)
 
         if search_query:
             courses = base_courses.filter(title__icontains=search_query) | base_courses.filter(description__icontains=search_query)
