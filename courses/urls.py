@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CourseListCreateView, EnrollCourseView, CoursePageView, AddCourseStepView, AddFeedbackView, UpdateCourseStatusView
+from .views import CourseListCreateView, EnrollCourseView, CoursePageView, AddCourseStepView, AddFeedbackView, UpdateCourseStatusView,PublishCourseResultView
 
 urlpatterns = [
     path('courses/', CourseListCreateView.as_view(), name='course_list_create'),
@@ -12,4 +12,6 @@ urlpatterns = [
     path('courses/<int:course_id>/update-status/', UpdateCourseStatusView.as_view(), name='update_course_status'),
     
     path('dashboard/', CoursePageView.as_view(), name='course_dashboard'),
+
+    path('courses/<int:course_id>/result/', PublishCourseResultView.as_view(), name='publish_course_result'),
 ]

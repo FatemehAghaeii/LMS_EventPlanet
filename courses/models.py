@@ -89,3 +89,12 @@ class Feedback(models.Model):
 
     class Meta:
         unique_together = ('course', 'student')
+
+
+class CourseResult(models.Model):
+    course = models.OneToOneField(Course, on_delete=models.CASCADE, related_name='result', verbose_name="دوره")
+    content = models.TextField(verbose_name="متن نتایج / رتبه‌بندی و نمرات")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"نتایج رویداد: {self.course.title}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseStep, Feedback, Enrollment
+from .models import Course, CourseStep, Feedback, Enrollment, Attribute, CourseAttributeValue, CourseResult
 
 class CourseStepSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,6 +20,19 @@ class EnrolledStudentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = ['student_name']
 
+class CourseAttributeValueSerializer(serializers.ModelSerializer):
+    attribute_name = serializers.ReadOnlyField(source='attribute.name')
+
+    class Meta:
+        model = CourseAttributeValue
+        fields = ['id', 'attribute_name', 'value']
+
+# 🌟 سریالایزر جدید برای متادیتا و نتایج نهایی رویداد
+class CourseResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseResult
+        fields = ['id', 'content', 'created_at']
+
 class CourseSerializer(serializers.ModelSerializer):
     instructor_name = serializers.ReadOnlyField(source='instructor.username')
     level_display = serializers.CharField(source='get_level_display', read_only=True)
@@ -29,13 +42,17 @@ class CourseSerializer(serializers.ModelSerializer):
     steps = CourseStepSerializer(many=True, read_only=True)
     feedbacks = FeedbackSerializer(many=True, read_only=True)
     enrolled_students = EnrolledStudentSerializer(many=True, read_only=True)
+    dynamic_attributes = CourseAttributeValueSerializer(many=True, read_only=True)
+    
+    #  متصل شدن بخش نتایج به سریالایزر اصلی دوره
+    result = CourseResultSerializer(read_only=True)
 
     class Meta:
         model = Course
         fields = [
             'id', 'title', 'description', 'price', 'capacity', 
-            'image', 'duration_hours', 'prerequisites', 'level', 'level_display',
-            'status', 'status_display',
-            'instructor', 'instructor_name', 'steps', 'feedbacks', 'enrolled_students', 'created_at'
+            'image', 'duration_hours', 'status', 'status_display', 
+            'instructor', 'instructor_name', 'steps', 'feedbacks', 
+            'enrolled_students', 'dynamic_attributes', 'result', 'created_at'
         ]
         read_only_fields = ['instructor', 'created_at']
