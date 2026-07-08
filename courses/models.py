@@ -8,7 +8,6 @@ class Course(models.Model):
         INTERMEDIATE = 'INTERMEDIATE', 'متوسط'
         ADVANCED = 'ADVANCED', 'پیشرفته'
 
-    # 🌟 وضعیت‌های چهارگانه خواسته‌شده در داک استاد
     class CourseStatus(models.TextChoices):
         DRAFT = 'DRAFT', 'پیش‌نویس (Draft)'
         PUBLISHED = 'PUBLISHED', 'منتشر شده (Published)'
@@ -21,32 +20,46 @@ class Course(models.Model):
     capacity = models.PositiveIntegerField(verbose_name="ظرفیت دوره")
     image = models.ImageField(upload_to='course_images/', blank=True, null=True, verbose_name="تصویر دوره")
     duration_hours = models.PositiveIntegerField(default=0, verbose_name="طول دوره (ساعت)")
-    prerequisites = models.CharField(max_length=255, default="ندارد", verbose_name="پیش‌نیازها")
-    level = models.CharField(max_length=20, choices=CourseLevel.choices, default=CourseLevel.BEGINNER, verbose_name="سطح دوره")
     
-    # 🌟 فیلد وضعیت جدید (وضعیت پیش‌فرض روی Draft است)
     status = models.CharField(max_length=20, choices=CourseStatus.choices, default=CourseStatus.DRAFT, verbose_name="وضعیت رویداد")
-
     instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_courses', limit_choices_to={'role': 'ORGANIZER'}, verbose_name="مدرس")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-    # 🌟 متد منطقی قفل کردن تغییر وضعیت‌ها (Enforce Status Flow)
     def change_status(self, new_status):
         allowed_transitions = {
             self.CourseStatus.DRAFT: [self.CourseStatus.PUBLISHED],
             self.CourseStatus.PUBLISHED: [self.CourseStatus.CLOSED],
             self.CourseStatus.CLOSED: [self.CourseStatus.FINISHED],
-            self.CourseStatus.FINISHED: []  # رویداد تمام شده دیگر تغییر نمی‌کند
+            self.CourseStatus.FINISHED: []
         }
-        
         if new_status not in allowed_transitions.get(self.status, []):
             raise ValidationError(f"تغییر وضعیت غیرمجاز از {self.get_status_display()} به {new_status}!")
-        
         self.status = new_status
         self.save()
+
+
+# 🌟 جدول تعریف متادیتا یا ویژگی‌های داینامیک (EAV - Attribute)
+class Attribute(models.Model):
+    name = models.CharField(max_length=100, unique=True, verbose_name="نام ویژگی")
+
+    def __str__(self):
+        return self.name
+
+
+# 🌟 جدول مقادیر ویژگی‌ها برای هر رویداد (EAV - Value)
+class CourseAttributeValue(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='dynamic_attributes', verbose_name="رویداد")
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, related_name='course_values', verbose_name="ویژگی")
+    value = models.CharField(max_length=255, verbose_name="مقدار ویژگی")
+
+    class Meta:
+        unique_together = ('course', 'attribute')
+
+    def __str__(self):
+        return f"{self.course.title} - {self.attribute.name}: {self.value}"
 
 
 class Enrollment(models.Model):

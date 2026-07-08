@@ -8,6 +8,7 @@
 <body class="bg-gray-100 min-h-screen p-6">
 
     <div class="max-w-5xl mx-auto">
+        <!-- هدر صفحه -->
         <div class="flex justify-between items-center bg-white p-6 rounded-lg shadow-md mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">سامانه مدیریت یادگیری (LMS)</h1>
@@ -16,12 +17,15 @@
             <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition text-sm font-bold">خروج</button>
         </div>
 
+        <!-- نگاه اول: لیست کل دوره‌ها و جستجو -->
         <div id="mainDashboardView">
+            <!-- ابزار جستجو دوره‌ها -->
             <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex gap-4 items-center">
                 <input type="text" id="searchBar" placeholder="🔍 جستجوی عنوان دوره، پیش‌نیازها یا مباحث..." class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button onclick="loadCourses()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-bold text-sm">جستجو</button>
             </div>
 
+            <!-- بخش ساخت دوره (فقط مخصوص اساتید) -->
             <div id="createCourseSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">➕ ایجاد رویداد/دوره جدید (پنل مدرسین)</h2>
                 <form id="courseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -54,10 +58,6 @@
                         <input type="number" id="price" required class="mt-1 w-full p-2 border rounded-md">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">پیش‌نیازهای دوره</label>
-                        <input type="text" id="prerequisites" placeholder="مثلا: آشنایی مقدماتی با پایتون" class="mt-1 w-full p-2 border rounded-md">
-                    </div>
-                    <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">توضیحات دوره</label>
                         <textarea id="description" rows="3" required class="mt-1 w-full p-2 border rounded-md"></textarea>
                     </div>
@@ -68,17 +68,20 @@
                 <p id="formMessage" class="mt-3 text-center text-sm font-semibold"></p>
             </div>
 
+            <!-- بخش دوره‌های من (مخصوص دانشجوها) -->
             <div id="myCoursesSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
                 <h2 class="text-xl font-bold text-indigo-700 mb-4 border-b pb-2">🎓 دوره‌های من (ثبت‌نام شده)</h2>
                 <div id="myCoursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
+            <!-- بخش کل دوره‌های موجود در سایت -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">📚 دوره‌های آموزشی موجود</h2>
                 <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </div>
         </div>
 
+        <!-- نمای اختصاصی داخل یک کلاس -->
         <div id="singleCourseView" class="hidden space-y-6">
             <button onclick="backToDashboard()" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-300 transition text-sm font-bold flex items-center gap-2 cursor-pointer">
                 ⬅️ بازگشت به داشبورد اصلی دوره‌ها
@@ -97,15 +100,19 @@
                         </div>
                         <p id="detailCourseDesc" class="text-gray-600 mt-3 text-sm leading-relaxed"></p>
                     </div>
+                    
+                    <!-- اطلاعات پایه + رندر داینامیک ویژگی‌های EAV -->
                     <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-700">
                         <div>⏱️ <b>طول دوره:</b> <span id="detailCourseDuration"></span> ساعت</div>
-                        <div>🔑 <b>پیش‌نیازها:</b> <span id="detailCoursePrereq"></span></div>
                         <div>👨‍🏫 <b>مدرس دوره:</b> <span id="detailCourseInstructor"></span></div>
                         <div>👥 <b>ظرفیت باقی‌مانده:</b> <span id="detailCourseCapacity"></span> نفر</div>
+                        <!-- ویژگی‌های داینامیک به این بخش تزریق می‌شوند -->
+                        <div id="dynamicAttributesContainer" class="col-span-2 grid grid-cols-2 gap-4 border-t border-dashed border-gray-100 pt-2"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- بخش مدیریت چرخه وضعیت رویداد (فقط مخصوص اساتید) -->
             <div id="instructorStatusManagementArea" class="bg-white p-6 rounded-lg shadow-md hidden border-r-4 border-amber-500">
                 <h3 class="text-md font-bold text-gray-800 mb-2">⚙️ مدیریت چرخه وضعیت رویداد</h3>
                 <p class="text-xs text-gray-500 mb-4">به عنوان برگزارکننده، وضعیت این رویداد را بر اساس پیشرفت کلاس تغییر دهید (تغییرات باید به ترتیب منطقی باشند):</p>
@@ -114,6 +121,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- بخش سرفصل‌ها و نظرات -->
                 <div class="md:col-span-2 space-y-6">
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h3 class="text-lg font-bold text-indigo-900 border-b pb-2 mb-4">📋 مراحل و سرفصل‌های کلاس</h3>
@@ -140,6 +148,7 @@
                     </div>
                 </div>
 
+                <!-- سایدبار واقعی دانشجویان حاضر -->
                 <div id="instructorStudentsSidebar" class="bg-white p-6 rounded-lg shadow-md hidden">
                     <h3 class="text-lg font-bold text-emerald-900 border-b pb-2 mb-4">👥 لیست دانشجویان حاضر</h3>
                     <div id="detailStudentsList" class="space-y-2 text-sm"></div>
@@ -148,6 +157,7 @@
         </div>
     </div>
 
+    <!-- مودال‌ها -->
     <div id="paymentModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl w-96 border-t-4 border-emerald-500">
             <h3 class="text-lg font-bold text-gray-800 mb-2">💳 درگاه پرداخت الکترونیک</h3>
@@ -296,7 +306,6 @@
             document.getElementById('detailCourseDesc').innerText = course.description;
             document.getElementById('detailCourseLevel').innerText = course.level_display;
             document.getElementById('detailCourseDuration').innerText = course.duration_hours;
-            document.getElementById('detailCoursePrereq').innerText = course.prerequisites;
             document.getElementById('detailCourseInstructor').innerText = course.instructor_name;
             document.getElementById('detailCourseCapacity').innerText = course.capacity;
             document.getElementById('detailCourseImage').src = course.image ? course.image : 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=400';
@@ -307,6 +316,21 @@
             else if (course.status === 'PUBLISHED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-green-100 text-green-800"; }
             else if (course.status === 'CLOSED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-amber-100 text-amber-800"; }
             else if (course.status === 'FINISHED') { statusBadge.className = "text-xs px-3 py-1 rounded-full font-bold bg-red-100 text-red-800"; }
+
+            // 🌟 تزریق کاملاً داینامیک ویژگی‌های EAV دیتابیس به داخل بخش جزئیات فرانت‌آند
+            const dynAttrContainer = document.getElementById('dynamicAttributesContainer');
+            dynAttrContainer.innerHTML = '';
+            if (course.dynamic_attributes && course.dynamic_attributes.length > 0) {
+                course.dynamic_attributes.forEach(attr => {
+                    dynAttrContainer.innerHTML += `
+                        <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                            <b>📌 ${attr.attribute_name}:</b> <span class="text-blue-700 font-semibold">${attr.value}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                dynAttrContainer.innerHTML = '<p class="text-gray-400 italic text-[11px] col-span-2">ویژگی داینامیک بیشتری برای این نوع رویداد ست نشده است.</p>';
+            }
 
             const stepsContainer = document.getElementById('detailStepsList');
             stepsContainer.innerHTML = '';
@@ -525,7 +549,6 @@
             formData.append('level', document.getElementById('level').value);
             formData.append('capacity', document.getElementById('capacity').value);
             formData.append('price', document.getElementById('price').value);
-            formData.append('prerequisites', document.getElementById('prerequisites').value);
             formData.append('description', document.getElementById('description').value);
             const imageFile = document.getElementById('image').files[0];
             if (imageFile) formData.append('image', imageFile);
