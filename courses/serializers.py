@@ -20,7 +20,6 @@ class EnrolledStudentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = ['student_name']
 
-# 🌟 سریالایزر جدید برای نمایش مقادیر داینامیک
 class CourseAttributeValueSerializer(serializers.ModelSerializer):
     attribute_name = serializers.ReadOnlyField(source='attribute.name')
 
@@ -37,16 +36,14 @@ class CourseSerializer(serializers.ModelSerializer):
     steps = CourseStepSerializer(many=True, read_only=True)
     feedbacks = FeedbackSerializer(many=True, read_only=True)
     enrolled_students = EnrolledStudentSerializer(many=True, read_only=True)
-    
-    # 🌟 اضافه شدن لیست ویژگی‌های داینامیک به هر دوره
     dynamic_attributes = CourseAttributeValueSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
         fields = [
             'id', 'title', 'description', 'price', 'capacity', 
-            'image', 'duration_hours', 'level', 'level_display',
-            'status', 'status_display', 'steps', 'feedbacks', 
-            'enrolled_students', 'dynamic_attributes', 'created_at'
+            'image', 'duration_hours', 'prerequisites', 'level', 'level_display',
+            'status', 'status_display', 'steps', 'feedbacks', 'enrolled_students', 
+            'dynamic_attributes', 'created_at'
         ]
         read_only_fields = ['instructor', 'created_at']

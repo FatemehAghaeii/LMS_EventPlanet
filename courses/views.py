@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import render
 from django.core.exceptions import ValidationError
-from .models import Course, Enrollment, CourseStep, Feedback
+from .models import Course, Enrollment, CourseStep, Feedback, Attribute, CourseAttributeValue
 from .serializers import CourseSerializer, CourseStepSerializer, FeedbackSerializer
 
 class CourseListCreateView(APIView):
@@ -130,7 +130,7 @@ class UpdateCourseStatusView(APIView):
 
         try:
             course.change_status(new_status)
-            return Response({"detail": f"وضعیت رویداد با موفقیت به تغییر یافت.", "status": course.status})
+            return Response({"detail": f"وضعیت رویداد با موفقیت تغییر یافت.", "status": course.status})
         except ValidationError as e:
             return Response({"detail": str(e.message)}, status=status.HTTP_400_BAD_REQUEST)
 

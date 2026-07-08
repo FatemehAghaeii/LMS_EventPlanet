@@ -20,8 +20,10 @@ class Course(models.Model):
     capacity = models.PositiveIntegerField(verbose_name="ظرفیت دوره")
     image = models.ImageField(upload_to='course_images/', blank=True, null=True, verbose_name="تصویر دوره")
     duration_hours = models.PositiveIntegerField(default=0, verbose_name="طول دوره (ساعت)")
-    
+    prerequisites = models.CharField(max_length=255, blank=True, null=True, verbose_name="پیش‌نیازها")
+    level = models.CharField(max_length=20, choices=CourseLevel.choices, default=CourseLevel.BEGINNER, verbose_name="سطح دوره")
     status = models.CharField(max_length=20, choices=CourseStatus.choices, default=CourseStatus.DRAFT, verbose_name="وضعیت رویداد")
+
     instructor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_courses', limit_choices_to={'role': 'ORGANIZER'}, verbose_name="مدرس")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -41,7 +43,6 @@ class Course(models.Model):
         self.save()
 
 
-# 🌟 جدول تعریف متادیتا یا ویژگی‌های داینامیک (EAV - Attribute)
 class Attribute(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="نام ویژگی")
 
@@ -49,7 +50,6 @@ class Attribute(models.Model):
         return self.name
 
 
-# 🌟 جدول مقادیر ویژگی‌ها برای هر رویداد (EAV - Value)
 class CourseAttributeValue(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='dynamic_attributes', verbose_name="رویداد")
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE, related_name='course_values', verbose_name="ویژگی")
