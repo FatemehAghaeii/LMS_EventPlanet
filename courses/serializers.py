@@ -27,7 +27,6 @@ class CourseAttributeValueSerializer(serializers.ModelSerializer):
         model = CourseAttributeValue
         fields = ['id', 'attribute_name', 'value']
 
-# 🌟 سریالایزر جدید برای متادیتا و نتایج نهایی رویداد
 class CourseResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseResult
@@ -43,16 +42,14 @@ class CourseSerializer(serializers.ModelSerializer):
     feedbacks = FeedbackSerializer(many=True, read_only=True)
     enrolled_students = EnrolledStudentSerializer(many=True, read_only=True)
     dynamic_attributes = CourseAttributeValueSerializer(many=True, read_only=True)
-    
-    #  متصل شدن بخش نتایج به سریالایزر اصلی دوره
     result = CourseResultSerializer(read_only=True)
 
     class Meta:
         model = Course
         fields = [
             'id', 'title', 'description', 'price', 'capacity', 
-            'image', 'duration_hours', 'status', 'status_display', 
-            'instructor', 'instructor_name', 'steps', 'feedbacks', 
-            'enrolled_students', 'dynamic_attributes', 'result', 'created_at'
+            'image', 'duration_hours', 'prerequisites', 'level', 'level_display', 
+            'status', 'status_display', 'instructor', 'instructor_name', 
+            'steps', 'feedbacks', 'enrolled_students', 'dynamic_attributes', 'result', 'created_at'
         ]
         read_only_fields = ['instructor', 'created_at']

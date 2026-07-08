@@ -8,6 +8,7 @@
 <body class="bg-gray-100 min-h-screen p-6">
 
     <div class="max-w-5xl mx-auto">
+        <!-- هدر صفحه -->
         <div class="flex justify-between items-center bg-white p-6 rounded-lg shadow-md mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">سامانه مدیریت یادگیری (LMS)</h1>
@@ -16,12 +17,15 @@
             <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition text-sm font-bold">خروج</button>
         </div>
 
+        <!-- نگاه اول: لیست کل دوره‌ها و جستجو -->
         <div id="mainDashboardView">
+            <!-- ابزار جستجو دوره‌ها -->
             <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex gap-4 items-center">
                 <input type="text" id="searchBar" placeholder="🔍 جستجوی عنوان دوره، پیش‌نیازها یا مباحث..." class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button onclick="loadCourses()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-bold text-sm">جستجو</button>
             </div>
 
+            <!-- بخش ساخت دوره (فقط مخصوص اساتید) -->
             <div id="createCourseSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">➕ ایجاد رویداد/دوره جدید (پنل مدرسین)</h2>
                 <form id="courseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -68,17 +72,20 @@
                 <p id="formMessage" class="mt-3 text-center text-sm font-semibold"></p>
             </div>
 
+            <!-- بخش دوره‌های من (مخصوص دانشجوها) -->
             <div id="myCoursesSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
                 <h2 class="text-xl font-bold text-indigo-700 mb-4 border-b pb-2">🎓 دوره‌های من (ثبت‌نام شده)</h2>
                 <div id="myCoursesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
+            <!-- بخش کل دوره‌های موجود در سایت -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">📚 دوره‌های آموزشی موجود</h2>
                 <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </div>
         </div>
 
+        <!-- نمای اختصاصی داخل یک کلاس -->
         <div id="singleCourseView" class="hidden space-y-6">
             <button onclick="backToDashboard()" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-300 transition text-sm font-bold flex items-center gap-2 cursor-pointer">
                 ⬅️ بازگشت به داشبورد اصلی دوره‌ها
@@ -106,6 +113,7 @@
                 </div>
             </div>
 
+            <!-- بخش مدیریت چرخه وضعیت رویداد (فقط مخصوص اساتید) -->
             <div id="instructorStatusManagementArea" class="bg-white p-6 rounded-lg shadow-md hidden border-r-4 border-amber-500">
                 <h3 class="text-md font-bold text-gray-800 mb-2">⚙️ مدیریت چرخه وضعیت رویداد</h3>
                 <p class="text-xs text-gray-500 mb-4">به عنوان برگزارکننده، وضعیت این رویداد را بر اساس پیشرفت کلاس تغییر دهید (تغییرات باید به ترتیب منطقی باشند):</p>
@@ -114,8 +122,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- بخش سرفصل‌ها و نظرات -->
                 <div class="md:col-span-2 space-y-6">
                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <!-- باکس نمایش عمومی نتایج منتشر شده -->
                         <div id="publicResultDisplayArea" class="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-4 hidden">
                             <h4 class="text-sm font-bold text-amber-900 flex items-center gap-1 mb-1">🏆 نتایج و رتبه‌بندی رسمی این رویداد منتشر شد:</h4>
                             <p id="publicResultContent" class="text-xs text-amber-800 font-medium leading-relaxed whitespace-pre-line"></p>
@@ -144,6 +154,7 @@
                         </div>
                     </div>
 
+                    <!-- باکس ثبت و مدیریت نتایج رویداد (فقط مخصوص اساتید پس از پایان دوره) -->
                     <div id="instructorResultFormArea" class="bg-white p-6 rounded-lg shadow-md mt-6 hidden border-r-4 border-red-500">
                         <h3 class="text-lg font-bold text-red-900 border-b pb-2 mb-4">🏆 ثبت و انتشار نتایج نهایی رویداد</h3>
                         <form id="resultForm" class="space-y-4">
@@ -157,6 +168,7 @@
                     </div>
                 </div>
 
+                <!-- سایدبار واقعی دانشجویان حاضر -->
                 <div id="instructorStudentsSidebar" class="bg-white p-6 rounded-lg shadow-md hidden">
                     <h3 class="text-lg font-bold text-emerald-900 border-b pb-2 mb-4">👥 لیست دانشجویان حاضر</h3>
                     <div id="detailStudentsList" class="space-y-2 text-sm"></div>
@@ -165,6 +177,7 @@
         </div>
     </div>
 
+    <!-- مودال‌ها (درگاه پرداخت و بازخورد) -->
     <div id="paymentModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl w-96 border-t-4 border-emerald-500">
             <h3 class="text-lg font-bold text-gray-800 mb-2">💳 درگاه پرداخت الکترونیک</h3>
@@ -253,11 +266,13 @@
 
         async function loadCourses() {
             const searchQuery = document.getElementById('searchBar').value;
+            const container = document.getElementById('coursesList');
+            // 🌟 پاک کردن دیتای قبلی صفحه برای جلوگیری از کپی و تکثیر تکراری کارت‌ها
+            container.innerHTML = '';
+
             try {
                 const response = await fetch(`/api/courses/?search=${searchQuery}`, { headers: { 'Authorization': `Token ${token}` } });
                 currentCoursesData = await response.json();
-                const container = document.getElementById('coursesList');
-                container.innerHTML = '';
 
                 if (currentCoursesData.length === 0) {
                     container.innerHTML = '<p class="text-gray-500 col-span-2 text-center py-4">هیچ دوره‌ای پیدا نشد.</p>';
@@ -363,7 +378,6 @@
                 
                 renderStatusButtons(course.status);
 
-                // 🌟 مدیریت نمایش باکس ثبت نتایج برای استاد
                 if (course.status === 'FINISHED') {
                     document.getElementById('instructorResultFormArea').classList.remove('hidden');
                     if (course.result) {
@@ -402,7 +416,6 @@
                 } else { document.getElementById('studentFeedbackFormArea').classList.add('hidden'); }
             }
 
-            // 🌟 نمایش عمومی نتایج برای همه در صورت وجود
             if (course.result && course.result.content) {
                 document.getElementById('publicResultDisplayArea').classList.remove('hidden');
                 document.getElementById('publicResultContent').innerText = course.result.content;
@@ -509,12 +522,14 @@
         });
 
         async function loadMyCourses() {
+            const container = document.getElementById('myCoursesList');
+            // 🌟 پاکسازی کامل لیست خریدهای قبلی دانشجو قبل از لود مجدد
+            container.innerHTML = '';
+            
             try {
                 const response = await fetch('/api/courses/enroll/', { headers: { 'Authorization': `Token ${token}` } });
                 const myCourses = await response.json();
                 registeredCourseIds = myCourses.map(c => c.id);
-                const container = document.getElementById('myCoursesList');
-                container.innerHTML = '';
 
                 if (myCourses.length === 0) {
                     container.innerHTML = '<p class="text-gray-400 col-span-2 text-center py-2">شما هنوز در هیچ کلاسی ثبت‌نام نکرده‌اید.</p>';
@@ -544,10 +559,15 @@
             try {
                 const response = await fetch(`/api/courses/enroll/${selectedCourseId}/`, { method: 'POST', headers: { 'Authorization': `Token ${token}` } });
                 if (response.ok) {
-                    alert(`✨ پرداخت موفقیت‌آمیز بود!`);
+                    alert(`✨ پرداخت موفقیت‌آمیز بود! دوره به پورتال شما اضافه شد.`);
                     closePaymentModal();
+                    // 🌟 اول دوره‌های دانشجو مجدد ثبت شده تا آرایه شناسه‌ها سریعاً سینک شود
                     await loadMyCourses();
-                    loadCourses();   
+                    // 🌟 سپس کل دوره‌ها بازخوانی می‌شوند تا دکمه به ورود کلاس تبدیل شود
+                    await loadCourses();   
+                } else {
+                    const data = await response.json();
+                    alert("خطا در ثبت‌نام: " + JSON.stringify(data));
                 }
             } catch (e) { console.error(e); }
         });
@@ -575,7 +595,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     messageEl.className = "mt-3 text-center text-sm font-semibold text-green-600";
-                    messageEl.innerText = "دوره با موفقیت به صورت پیش‌نویس (Draft) ساخته شد. برای فعال‌سازی وارد محیط کلاس شوید و دکمه انتشار را بزنید.";
+                    messageEl.innerText = "دوره با موفقیت به صورت پیش‌نویس (Draft) ساخته شد. برای فعال‌سازی وارد محیط کلاس شوید و دکمه انتشار را بزنید. 🎉";
                     document.getElementById('courseForm').reset();
                     loadCourses();
                 } else {
@@ -589,7 +609,6 @@
             }
         });
 
-        // 🌟 اسکریپت ارسال و انتشار رسمی نتایج توسط استاد
         document.getElementById('resultForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const content = document.getElementById('resultContent').value;

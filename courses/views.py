@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import render
 from django.core.exceptions import ValidationError
-from .models import Course, Enrollment, CourseStep, Feedback, Attribute, CourseAttributeValue
-from .serializers import CourseSerializer, CourseStepSerializer, FeedbackSerializer
+
+# ایمپورت دقیق مدل‌ها و سریالایزرها به صورت یکپارچه
 from .models import Course, Enrollment, CourseStep, Feedback, Attribute, CourseAttributeValue, CourseResult
 from .serializers import CourseSerializer, CourseStepSerializer, FeedbackSerializer, CourseResultSerializer
 
@@ -151,19 +151,16 @@ class PublishCourseResultView(APIView):
         except Course.DoesNotExist:
             return Response({"detail": "دوره یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
 
-        # 🔒 چک کردن مالکیت رویداد
         if course.instructor != request.user:
             return Response({"detail": "شما مالک این رویداد نیستید."}, status=status.HTTP_403_FORBIDDEN)
 
-        # 🔒 چک کردن وضعیت Finished طبق داک استاد
         if course.status != 'FINISHED':
             return Response({"detail": "تنها پس از پایان یافتن رویداد (Finished) مجاز به انتشار نتایج هستید."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # ثبت یا آپدیت نتایج
         result_obj, created = CourseResult.objects.get_or_create(course=course)
         serializer = CourseResultSerializer(result_obj, data=request.data)
         
         if serializer.is_valid():
             serializer.save()
             return Response({"detail": "نتایج رویداد با موفقیت منتشر شد!", "result": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
